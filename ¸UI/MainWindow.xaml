@@ -1,0 +1,27 @@
+﻿<Window x:Class="_UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_UI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Controls Pane -->
+        <StackPanel Grid.Column="0" Background="LightGray">
+            <TextBlock Text="Controls" FontWeight="Bold" Margin="10"/>
+            <TextBox Name="DraggableTextBox" Width="150" Height="30" Margin="10" Text="Drag me" 
+                     PreviewMouseMove="DraggableTextBox_PreviewMouseMove"
+                     MouseEnter="TextBox_MouseEnter" 
+                     MouseLeave="TextBox_MouseLeave"/>
+        </StackPanel>
+
+        <!-- Canvas Pane -->
+        <Canvas Name="DropCanvas" Grid.Column="1" Background="White" AllowDrop="True" Drop="DropCanvas_Drop"/>
+    </Grid>
+</Window>

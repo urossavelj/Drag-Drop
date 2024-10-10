@@ -1,0 +1,9 @@
+﻿namespace _UI
+{
+    public class GridPosition
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public string Text { get; set; }
+    }
+}
