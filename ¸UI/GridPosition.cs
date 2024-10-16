@@ -5,5 +5,6 @@
         public double Left { get; set; }
         public double Top { get; set; }
         public string Text { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -1,3 +1,6 @@
+using _UI;
+using API.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace API
 {
@@ -6,6 +9,12 @@ namespace API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            //Options
+            builder.Configuration.AddEntityConfiguration();
+
+            builder.Services.Configure<ServerOptions>(
+            builder.Configuration.GetSection("ServerOptions"));
 
             // Add services to the container.
 
@@ -16,6 +25,12 @@ namespace API
 
             var app = builder.Build();
 
+            //using IHost host = builder.Build();
+
+            ServerOptions options = app.Services.GetRequiredService<IOptions<ServerOptions>>().Value;
+            Console.WriteLine($"InboundAddress={options.InboundAddress}");
+            Console.WriteLine($"InboundPort={options.InboundPort}");
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -23,13 +38,19 @@ namespace API
                 app.UseSwaggerUI();
             }
 
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>();
+            //    dbContext.Database.EnsureCreated();
+            //}
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
+            app.Urls.Add(options.InboundAddress + ":" + options.InboundPort);
             app.Run();
         }
     }

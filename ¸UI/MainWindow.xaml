@@ -5,23 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Drag&amp;Drop" Height="550" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
 
         <!-- Controls Pane -->
         <StackPanel Grid.Column="0" Background="LightGray">
-            <TextBlock Text="Controls" FontWeight="Bold" Margin="10"/>
-            <TextBox Name="DraggableTextBox" Width="150" Height="30" Margin="10" Text="Drag me" 
-                     PreviewMouseMove="DraggableTextBox_PreviewMouseMove"
-                     MouseEnter="TextBox_MouseEnter" 
-                     MouseLeave="TextBox_MouseLeave"/>
+            <TextBlock Text="Server" FontWeight="Bold" Margin="10"/>
+            <TextBlock Name="InboundAddress" Width="150" Height="30" Margin="10" Text="Inbound Address" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
+            <TextBlock Name="InboundPort" Width="150" Height="30" Margin="10" Text="Inbound Port" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
+
+            <TextBlock Text="Client" FontWeight="Bold" Margin="10"/>
+            <TextBlock Name="OutboundAddress" Width="150" Height="30" Margin="10" Text="Outbound Address" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
+            <TextBlock Name="OutboundPort" Width="150" Height="30" Margin="10" Text="Outbound Port" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
+
+            <TextBlock Text="Additional fields" FontWeight="Bold" Margin="10"/>
+            <TextBlock Name="Body" Width="150" Height="30" Margin="10" Text="Body" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
+            <TextBlock Name="HTTPParams" Width="150" Height="30" Margin="10" Text="HTTP params" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
+            <TextBlock Name="IncomingRequests" Width="150" Height="30" Margin="10" Text="Incoming requests" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
         </StackPanel>
 
         <!-- Canvas Pane -->
         <Canvas Name="DropCanvas" Grid.Column="1" Background="White" AllowDrop="True" Drop="DropCanvas_Drop"/>
+
+        <!-- Buttons Pane -->
+        <StackPanel Grid.Column="2" Background="LightGray" VerticalAlignment="Top" HorizontalAlignment="Center">
+            <Button Name="StartButton" Content="Start" Width="100" Height="30" Margin="10" Click="StartButton_Click"/>
+            <Button Name="StopButton" Content="Stop" Width="100" Height="30" Margin="10" Click="StopButton_Click"/>
+        </StackPanel>
     </Grid>
+
 </Window>
