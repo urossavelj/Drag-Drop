@@ -26,7 +26,7 @@ namespace API.Providers
                 StringComparer.OrdinalIgnoreCase)
             {
                 ["ServerOptions:InboundAddress"] = "https://localhost",
-                ["ServerOptions:InboundPort"] = "7185",
+                ["ServerOptions:InboundPort"] = "7188",
             };
 
             context.Settings.AddRange(
