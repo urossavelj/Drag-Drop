@@ -15,4 +15,4 @@ On the right side you also have buttons Send, Start and Stop.
 - button Send will send a request to the API, with the url and port set in the Client outbound address and outbound port. It will send also the Body and HTTP parameters set on the right side panel. HTTP params ex.: param1, value1; param2, value2;
 - button Save as written before also updates the API server address and port (if filled out) and if API server is running (but the outbound address and port has to be correct - the current address and port). If you update it, than you can stop the service and press start again and the API server will run on the new address.
 
- 
+ P.S. Swagger also starts on default address https://localhost:7188/swagger/index.html
