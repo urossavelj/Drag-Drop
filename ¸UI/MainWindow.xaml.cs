@@ -80,10 +80,10 @@ namespace _UI
             {
                 Text = name,
                 Width = 170,
-                Height = 30, 
+                Height = 30,
                 Margin = new Thickness(0, 0, 30, 0),
                 VerticalAlignment = VerticalAlignment.Top,
-                FontSize = 14, 
+                FontSize = 14,
                 FontWeight = FontWeights.Bold
             };
 
@@ -209,11 +209,8 @@ namespace _UI
             AdditionalFields additionalFields;
             GetValues(out server, out client, out additionalFields);
 
-            if(string.IsNullOrEmpty(client.OutboundAddress) || string.IsNullOrEmpty(client.OutboundPort))
-            {
-                MessageBox.Show("Outbound address or outbound port is empty");
+            if (string.IsNullOrEmpty(client.OutboundAddress) || string.IsNullOrEmpty(client.OutboundPort))
                 return;
-            }
 
             var url = client.OutboundAddress + ":" + client.OutboundPort + "/Settings";
 
