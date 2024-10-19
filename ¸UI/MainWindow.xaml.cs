@@ -1,5 +1,11 @@
-﻿using System.Diagnostics;
+﻿using _UI.Helpers;
+using _UI.Models;
+using API.Dtos;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,12 +19,19 @@ namespace _UI
         private Point _startPoint;
         private const string PositionsFile = "positions.json";
         private HashSet<string> addedFields = new HashSet<string>();
-        private Process _process;
+        private Process? _process;
+        private static readonly HttpClient httpClient = new HttpClient();
 
         public MainWindow()
         {
             InitializeComponent();
             LoadPositions();
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            _process?.Kill();
+            base.OnClosing(e);
         }
 
         private void TextBlock_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -58,18 +71,19 @@ namespace _UI
             Grid grid = new Grid
             {
                 Width = 200,
-                Height = 60, // Adjusted height to accommodate larger TextBox
-                Background = Brushes.White
+                Height = 60,
+                Background = Brushes.White,
+                Name = name + "Grid"
             };
 
             TextBlock nameLabel = new TextBlock
             {
                 Text = name,
                 Width = 170,
-                Height = 30, // Increased height for the label
+                Height = 30, 
                 Margin = new Thickness(0, 0, 30, 0),
                 VerticalAlignment = VerticalAlignment.Top,
-                FontSize = 14, // Increased font size for the label
+                FontSize = 14, 
                 FontWeight = FontWeights.Bold
             };
 
@@ -77,9 +91,10 @@ namespace _UI
             {
                 Text = text,
                 Width = 170,
-                Height = 30, // Increased height for the TextBox
+                Height = 30,
                 Margin = new Thickness(0, 30, 30, 0),
-                VerticalAlignment = VerticalAlignment.Bottom
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Name = name + "TextBox"
             };
 
             Button removeButton = new Button
@@ -187,6 +202,63 @@ namespace _UI
             File.WriteAllText(PositionsFile, json);
         }
 
+        private async void SaveServerSettings()
+        {
+            Server server;
+            Client client;
+            AdditionalFields additionalFields;
+            GetValues(out server, out client, out additionalFields);
+
+            if(string.IsNullOrEmpty(client.OutboundAddress) || string.IsNullOrEmpty(client.OutboundPort))
+            {
+                MessageBox.Show("Outbound address or outbound port is empty");
+                return;
+            }
+
+            var url = client.OutboundAddress + ":" + client.OutboundPort + "/Settings";
+
+            var builder = new UriBuilder(url);
+            url = builder.ToString();
+
+            var serverOptions = new ServerOptions
+            {
+                InboundAddress = server.InboundAddress,
+                InboundPort = server.InboundPort
+            };
+
+            var json = JsonSerializer.Serialize(serverOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string responseBody = string.Empty;
+
+            try
+            {
+                HttpResponseMessage response = await httpClient.PutAsync(url, content);
+
+                var statusCode = response.StatusCode;
+
+                if (statusCode == HttpStatusCode.OK)
+                {
+                    responseBody = "Request succeeded! ";
+                }
+                else
+                {
+                    responseBody = $"Request failed with status code: {statusCode} ";
+                }
+                if (response.Headers.TryGetValues("Date", out var dateValues))
+                {
+                    var date = DateTime.Parse(dateValues.First());
+                    responseBody += date;
+                }
+            }
+            catch (Exception ex)
+            {
+                responseBody = ex.Message;
+            }
+
+            IncomingRequestsTextBox.Text = responseBody;
+        }
+
         private void LoadPositions()
         {
             if (File.Exists(PositionsFile))
@@ -204,17 +276,23 @@ namespace _UI
             }
         }
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            SavePositions();
-            base.OnClosing(e);
-        }
-
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            Server server = new Server();
-            Client client = new Client();
-            AdditionalFields additionalFields = new AdditionalFields();
+            Server server;
+            Client client;
+            AdditionalFields additionalFields;
+            GetValues(out server, out client, out additionalFields);
+
+            var workingDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)?.Parent?.Parent?.Parent?.Parent;
+
+            _process = Process.Start(Path.Combine(workingDirectory.ToString(), @"API\bin\Debug\net8.0\API.exe"));
+        }
+
+        private void GetValues(out Server server, out Client client, out AdditionalFields additionalFields)
+        {
+            server = new Server();
+            client = new Client();
+            additionalFields = new AdditionalFields();
 
             foreach (UIElement element in DropCanvas.Children)
             {
@@ -237,32 +315,87 @@ namespace _UI
                         case "OutboundPort":
                             client.OutboundPort = textBox.Text;
                             break;
-                        case "Body":
-                            additionalFields.Body = textBox.Text;
-                            break;
-                        case "HTTPParams":
-                            additionalFields.HTTPParams = textBox.Text;
-                            break;
-                        case "IncomingRequests":
-                            additionalFields.IncomingRequests = textBox.Text;
-                            break;
                     }
                 }
             }
-
-            // Display the values for demonstration purposes
-            MessageBox.Show($"Server:\nInbound Address: {server.InboundAddress}\nInbound Port: {server.InboundPort}\n\n" +
-                            $"Client:\nOutbound Address: {client.OutboundAddress}\nOutbound Port: {client.OutboundPort}\n\n" +
-                            $"Additional Fields:\nBody: {additionalFields.Body}\nHTTP params: {additionalFields.HTTPParams}\nIncoming requests: {additionalFields.IncomingRequests}");
-
-            var workingDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.Parent;
-
-            _process = Process.Start(Path.Combine(workingDirectory.ToString(), @"API\bin\Debug\net8.0\API.exe"));
+            additionalFields.Body = BodyTextBox.Text;
+            additionalFields.HTTPParams = HTTPParamsTextBox.Text;
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            _process.Kill();
+            _process?.Kill();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            SavePositions();
+            SaveServerSettings();
+        }
+
+        private async void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            Server server;
+            Client client;
+            AdditionalFields additionalFields;
+            GetValues(out server, out client, out additionalFields);
+
+            var httpParams = Parsers.ParseStringToDictionary(additionalFields.HTTPParams);
+
+            if (string.IsNullOrEmpty(server.InboundAddress) || string.IsNullOrEmpty(server.InboundPort))
+            {
+                MessageBox.Show("Inbound address or inbound port is empty");
+                return;
+            }
+
+            await SendMessageAsync(server.InboundAddress + ":" + server.InboundPort + "/Settings", httpParams, additionalFields.Body);
+        }
+
+        private async Task<string> SendMessageAsync(string url, Dictionary<string, string> headers, string body)
+        {
+            var builder = new UriBuilder(url);
+            url = builder.ToString();
+
+            var json = JsonSerializer.Serialize(body);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Content = content;
+
+            foreach (var header in headers)
+            {
+                request.Headers.Add(header.Key, header.Value);
+            }
+
+            string responseBody = string.Empty;
+
+            try
+            {
+                HttpResponseMessage response = await httpClient.SendAsync(request);
+                var statusCode = response.StatusCode;
+
+                if (statusCode == HttpStatusCode.OK)
+                {
+                    responseBody = "Request succeeded! ";
+                }
+                else
+                {
+                    responseBody = $"Request failed with status code: {statusCode} ";
+                }
+                if (response.Headers.TryGetValues("Date", out var dateValues))
+                {
+                    var date = DateTime.Parse(dateValues.First());
+                    responseBody += date;
+                }
+            }
+            catch (Exception ex)
+            {
+                responseBody = ex.Message;
+            }
+
+            IncomingRequestsTextBox.Text = responseBody;
+
+            return responseBody;
         }
     }
 }

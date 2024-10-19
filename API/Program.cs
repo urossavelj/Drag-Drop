@@ -38,12 +38,6 @@ namespace API
                 app.UseSwaggerUI();
             }
 
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var dbContext = scope.ServiceProvider.GetRequiredService<SettingsContext>();
-            //    dbContext.Database.EnsureCreated();
-            //}
-
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

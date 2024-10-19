@@ -1,4 +1,4 @@
-﻿namespace _UI
+﻿namespace _UI.Models
 {
     public class Client
     {

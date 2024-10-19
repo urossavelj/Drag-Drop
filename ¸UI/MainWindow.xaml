@@ -22,20 +22,24 @@
             <TextBlock Text="Client" FontWeight="Bold" Margin="10"/>
             <TextBlock Name="OutboundAddress" Width="150" Height="30" Margin="10" Text="Outbound Address" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
             <TextBlock Name="OutboundPort" Width="150" Height="30" Margin="10" Text="Outbound Port" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
-
-            <TextBlock Text="Additional fields" FontWeight="Bold" Margin="10"/>
-            <TextBlock Name="Body" Width="150" Height="30" Margin="10" Text="Body" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
-            <TextBlock Name="HTTPParams" Width="150" Height="30" Margin="10" Text="HTTP params" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
-            <TextBlock Name="IncomingRequests" Width="150" Height="30" Margin="10" Text="Incoming requests" PreviewMouseMove="TextBlock_PreviewMouseMove"/>
         </StackPanel>
 
         <!-- Canvas Pane -->
         <Canvas Name="DropCanvas" Grid.Column="1" Background="White" AllowDrop="True" Drop="DropCanvas_Drop"/>
 
         <!-- Buttons Pane -->
-        <StackPanel Grid.Column="2" Background="LightGray" VerticalAlignment="Top" HorizontalAlignment="Center">
+        <StackPanel Grid.Column="4" Background="LightGray" VerticalAlignment="Top" HorizontalAlignment="Center">
             <Button Name="StartButton" Content="Start" Width="100" Height="30" Margin="10" Click="StartButton_Click"/>
             <Button Name="StopButton" Content="Stop" Width="100" Height="30" Margin="10" Click="StopButton_Click"/>
+            <Button Name="SaveButton" Content="Save" Width="100" Height="30" Margin="10" Click="SaveButton_Click"/>
+            <Button Name="SendButton" Content="Send" Width="100" Height="30" Margin="10" Click="SendButton_Click"/>
+
+            <TextBlock Text="Body" FontWeight="Bold" Margin="10"/>
+            <TextBox Name="BodyTextBox" Width="150" Height="30" Margin="10"/>
+            <TextBlock Text="HTTP Params" FontWeight="Bold" Margin="10"/>
+            <TextBox Name="HTTPParamsTextBox" Width="150" Height="30" Margin="10"/>
+            <TextBlock Text="Incoming Requests" FontWeight="Bold" Margin="10"/>
+            <TextBox Name="IncomingRequestsTextBox" Width="150" Height="30" Margin="10"/>
         </StackPanel>
     </Grid>
 
