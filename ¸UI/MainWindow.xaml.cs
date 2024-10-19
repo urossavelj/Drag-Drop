@@ -28,12 +28,21 @@ namespace _UI
             LoadPositions();
         }
 
+        /// <summary>
+        /// On closing override
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             _process?.Kill();
             base.OnClosing(e);
         }
 
+        /// <summary>
+        /// On mouse move event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBlock_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -49,6 +58,11 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// Drop event for canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DropCanvas_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(TextBlock)))
@@ -66,6 +80,12 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// Logic for creating grid element with label and text box
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         private Grid CreateRemovableEditableTextBlock(string text, string name)
         {
             Grid grid = new Grid
@@ -113,20 +133,30 @@ namespace _UI
             grid.Children.Add(textBox);
             grid.Children.Add(removeButton);
 
-            grid.PreviewMouseLeftButtonDown += Grid_PreviewMouseLeftButtonDown;
-            grid.PreviewMouseMove += Grid_PreviewMouseMove;
+            grid.PreviewMouseLeftButtonDown += Grid_MouseLeftButtonDown;
+            grid.PreviewMouseMove += Grid_MouseMove;
             grid.MouseEnter += Grid_MouseEnter;
             grid.MouseLeave += Grid_MouseLeave;
 
             return grid;
         }
 
-        private void Grid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        /// <summary>
+        /// On left mouse button pressed event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _startPoint = e.GetPosition(DropCanvas);
         }
 
-        private void Grid_PreviewMouseMove(object sender, MouseEventArgs e)
+        /// <summary>
+        /// On grid mouse move event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -148,6 +178,11 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// Grid mouse entered event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             Grid grid = sender as Grid;
@@ -157,6 +192,11 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// Grid mouse leave event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_MouseLeave(object sender, MouseEventArgs e)
         {
             Grid grid = sender as Grid;
@@ -166,6 +206,12 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// On remove grid button event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <param name="name"></param>
         private void RemoveButton_Click(object sender, RoutedEventArgs e, string name)
         {
             Button button = sender as Button;
@@ -180,6 +226,9 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// Save canvas settings to file
+        /// </summary>
         private void SavePositions()
         {
             List<GridPosition> positions = new List<GridPosition>();
@@ -202,6 +251,9 @@ namespace _UI
             File.WriteAllText(PositionsFile, json);
         }
 
+        /// <summary>
+        /// Save server settings to db
+        /// </summary>
         private async void SaveServerSettings()
         {
             Server server;
@@ -255,6 +307,9 @@ namespace _UI
             IncomingRequestsTextBox.Text = responseBody;
         }
 
+        /// <summary>
+        /// Load positions from file
+        /// </summary>
         private void LoadPositions()
         {
             if (File.Exists(PositionsFile))
@@ -272,6 +327,11 @@ namespace _UI
             }
         }
 
+        /// <summary>
+        /// Start API service
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             Server server;
@@ -284,6 +344,12 @@ namespace _UI
             _process = Process.Start(Path.Combine(workingDirectory.ToString(), @"API\bin\Debug\net8.0\API.exe"));
         }
 
+        /// <summary>
+        /// Get values from canvas fields
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="client"></param>
+        /// <param name="additionalFields"></param>
         private void GetValues(out Server server, out Client client, out AdditionalFields additionalFields)
         {
             server = new Server();
@@ -318,18 +384,33 @@ namespace _UI
             additionalFields.HTTPParams = HTTPParamsTextBox.Text;
         }
 
+        /// <summary>
+        /// Kill API service
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             _process?.Kill();
         }
 
+        /// <summary>
+        /// Save button event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             SavePositions();
             SaveServerSettings();
         }
 
-        private async void SendButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Send button event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             Server server;
             Client client;
@@ -347,6 +428,12 @@ namespace _UI
             SendMessageAsync(client.OutboundAddress + ":" + client.OutboundPort + "/Settings", httpParams, additionalFields.Body);
         }
 
+        /// <summary>
+        /// Sends message to API service
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headers"></param>
+        /// <param name="body"></param>
         private async void SendMessageAsync(string url, Dictionary<string, string> headers, string body)
         {
             CheckAndBuildUrl(ref url);
@@ -391,6 +478,10 @@ namespace _UI
             IncomingRequestsTextBox.Text = responseBody;
         }
 
+        /// <summary>
+        /// Checks and builds url
+        /// </summary>
+        /// <param name="url"></param>
         private static void CheckAndBuildUrl(ref string url)
         {
             try

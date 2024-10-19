@@ -17,6 +17,10 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Gets settings from database
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IEnumerable<Settings>? Get()
         {
@@ -28,6 +32,10 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Receives messages
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post()
         {
@@ -48,6 +56,11 @@ namespace API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Updates settings in database
+        /// </summary>
+        /// <param name="server"></param>
+        /// <returns></returns>
         [HttpPut]
         public IActionResult Put(ServerOptions server)
         {

@@ -19,6 +19,11 @@ namespace API.Providers
                 : CreateAndSaveDefaultValues(dbContext);
         }
 
+        /// <summary>
+        /// Saves default values in database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         static Dictionary<string, string?> CreateAndSaveDefaultValues(
             SettingsContext context)
         {
