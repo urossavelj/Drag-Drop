@@ -1,5 +1,6 @@
 using _UI;
 using API.Db;
+using API.Extensions;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,15 +20,39 @@ namespace API.Controllers
         [HttpGet]
         public IEnumerable<Settings>? Get()
         {
+            _logger.LogInformation("Get message received");
+
             using (var context = new SettingsContext())
             {
                 return context.Settings.ToList();
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Post()
+        {
+            _logger.LogInformation("Post message received");
+
+            var headers = Request.Headers;
+
+            foreach (var header in headers)
+            {
+                Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
+
+            var body = await Request.GetRawBodyAsync().ConfigureAwait(false);
+
+            _logger.LogInformation("Body:");
+            _logger.LogInformation(body);
+
+            return Ok();
+        }
+
         [HttpPut]
         public IActionResult Put(ServerOptions server)
         {
+            _logger.LogInformation("Put message received");
+
             using (var context = new SettingsContext())
             {
                 var serverOptionsInboundAddress = context.Settings.FirstOrDefault(c => c.Id == "ServerOptions:InboundAddress");
