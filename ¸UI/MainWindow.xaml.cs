@@ -214,8 +214,7 @@ namespace _UI
 
             var url = client.OutboundAddress + ":" + client.OutboundPort + "/Settings";
 
-            var builder = new UriBuilder(url);
-            url = builder.ToString();
+            CheckAndBuildUrl(ref url);
 
             var serverOptions = new ServerOptions
             {
@@ -345,13 +344,12 @@ namespace _UI
                 return;
             }
 
-            await SendMessageAsync(client.OutboundAddress + ":" + client.OutboundPort + "/Settings", httpParams, additionalFields.Body);
+            SendMessageAsync(client.OutboundAddress + ":" + client.OutboundPort + "/Settings", httpParams, additionalFields.Body);
         }
 
-        private async Task<string> SendMessageAsync(string url, Dictionary<string, string> headers, string body)
+        private async void SendMessageAsync(string url, Dictionary<string, string> headers, string body)
         {
-            var builder = new UriBuilder(url);
-            url = builder.ToString();
+            CheckAndBuildUrl(ref url);
 
             var json = JsonSerializer.Serialize(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -391,8 +389,20 @@ namespace _UI
             }
 
             IncomingRequestsTextBox.Text = responseBody;
+        }
 
-            return responseBody;
+        private static void CheckAndBuildUrl(ref string url)
+        {
+            try
+            {
+                var builder = new UriBuilder(url);
+                url = builder.ToString();
+            }
+            catch
+            {
+                MessageBox.Show($"Url invalid");
+                return;
+            }
         }
     }
 }
