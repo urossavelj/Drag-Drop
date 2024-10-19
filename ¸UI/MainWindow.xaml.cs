@@ -342,13 +342,13 @@ namespace _UI
 
             var httpParams = Parsers.ParseStringToDictionary(additionalFields.HTTPParams);
 
-            if (string.IsNullOrEmpty(server.InboundAddress) || string.IsNullOrEmpty(server.InboundPort))
+            if (string.IsNullOrEmpty(client.OutboundAddress) || string.IsNullOrEmpty(client.OutboundPort))
             {
-                MessageBox.Show("Inbound address or inbound port is empty");
+                MessageBox.Show("Outbound address or outbound port is empty");
                 return;
             }
 
-            await SendMessageAsync(server.InboundAddress + ":" + server.InboundPort + "/Settings", httpParams, additionalFields.Body);
+            await SendMessageAsync(client.OutboundAddress + ":" + client.OutboundPort + "/Settings", httpParams, additionalFields.Body);
         }
 
         private async Task<string> SendMessageAsync(string url, Dictionary<string, string> headers, string body)
